@@ -4,14 +4,14 @@
 -- Attribution: Don Michaud
 -- Revision:    160813
 
-appearance = {}
-local DATAFILE = "appearance.dat"
+myappearance = {}
+local DATAFILE = "myappearance.dat"
 local DATAPATH = minetest.get_worldpath() .. "/" .. DATAFILE
 
 -- ===================================================================
 -- Save/Read file functions
 
-function read_appearance()
+function read_myappearance()
     local f, err = io.open (DATAPATH, "r")
     if err then return end
     if f then
@@ -21,9 +21,9 @@ function read_appearance()
     end
 end
 
-function save_appearance()
+function save_myappearance()
     local file = io.open (DATAPATH, "w")
-    file:write (minetest.serialize (appearance))
+    file:write (minetest.serialize (myappearance))
     file:close()
 end
 
@@ -32,7 +32,7 @@ end
 
 local f, err = io.open (DATAPATH, "r")
 if f then
-    appearance = read_appearance()
+    myappearance = read_myappearance()
     f:close()
 end
 
@@ -65,10 +65,10 @@ local fhair    = APFEMALE .. "hair.png"
 -- ===================================================================
 -- Function to set a player's appearance
 
-function appearance_update (name)
+function myappearance_update (name)
     local player = minetest.get_player_by_name (name)
-    if appearance and appearance [name] then
-        local apname     = appearance [name]
+    if myappearance and myappearance [name] then
+        local apname     = myappearance [name]
 
         local skintex    = apname.skin
         local pantstex   = apname.pants
@@ -81,7 +81,7 @@ function appearance_update (name)
         local hairtex    = apname.hair
 
         player:set_properties ({
-            mesh = "appearance_character.b3d" ,
+            mesh = "myappearance_character.b3d" ,
             textures = {
 skintex    .. pantstex   .. shirttex   .. shoestex   ..
 facetex    .. eyestex    .. belttex    .. overlaytex ..
@@ -116,112 +116,112 @@ local colors_table = {
 
 -- ===================================================================
 
-local function change_appearance(name,fields)
+local function change_myappearance(name,fields)
     local f = minetest.serialize(fields)
     for i in ipairs(colors_table) do
         local col = colors_table[i][1]
 
         if string.find(f,"sex") ~= nil then
             if string.find(f, "female") ~= nil then
-                    appearance[name].sex = "female"
-                    appearance[name].skin = fskin.."^"
-                    appearance[name].pants = fpants.."^"
-                    appearance[name].shirt = fshirt.."^"
-                    appearance[name].shoes = fshoes.."^"
-                    appearance[name].face = fface.."^"
-                    appearance[name].eyes = "("..feyes.."^[colorize:blue:220)^"
-                    appearance[name].belt = "("..fbelt.."^[colorize:blue:220)^"
-                    appearance[name].overlay = foverlay.."^"
-                    appearance[name].hair = fhair
+                    myappearance[name].sex = "female"
+                    myappearance[name].skin = fskin.."^"
+                    myappearance[name].pants = fpants.."^"
+                    myappearance[name].shirt = fshirt.."^"
+                    myappearance[name].shoes = fshoes.."^"
+                    myappearance[name].face = fface.."^"
+                    myappearance[name].eyes = "("..feyes.."^[colorize:blue:220)^"
+                    myappearance[name].belt = "("..fbelt.."^[colorize:blue:220)^"
+                    myappearance[name].overlay = foverlay.."^"
+                    myappearance[name].hair = fhair
             else
-                    appearance[name].sex = "male"
-                    appearance[name].skin = mskin.."^"
-                    appearance[name].pants = mpants.."^"
-                    appearance[name].shirt = mshirt.."^"
-                    appearance[name].shoes = mshoes.."^"
-                    appearance[name].face = mface.."^"
-                    appearance[name].eyes = "("..meyes.."^[colorize:blue:220)^"
-                    appearance[name].belt = "("..mbelt.."^[colorize:blue:220)^"
-                    appearance[name].overlay = moverlay.."^"
-                    appearance[name].hair = mhair
+                    myappearance[name].sex = "male"
+                    myappearance[name].skin = mskin.."^"
+                    myappearance[name].pants = mpants.."^"
+                    myappearance[name].shirt = mshirt.."^"
+                    myappearance[name].shoes = mshoes.."^"
+                    myappearance[name].face = mface.."^"
+                    myappearance[name].eyes = "("..meyes.."^[colorize:blue:220)^"
+                    myappearance[name].belt = "("..mbelt.."^[colorize:blue:220)^"
+                    myappearance[name].overlay = moverlay.."^"
+                    myappearance[name].hair = mhair
             end
         elseif string.find(f,"skin") ~= nil then
             local b = string.find(f, "%d" )
             local c = tonumber(string.sub(f, b, b + 1))
             if c ~= nil then
-                appearance.skin_col = c
-                if appearance[name].sex == "male" then
-                    appearance[name].skin = "("..mskin.."^[colorize:#4b2700:"..tostring(c*20)..")^"
+                myappearance.skin_col = c
+                if myappearance[name].sex == "male" then
+                    myappearance[name].skin = "("..mskin.."^[colorize:#4b2700:"..tostring(c*20)..")^"
                 else
-                    appearance[name].skin = "("..fskin.."^[colorize:#4b2700:"..tostring(c*20)..")^"
+                    myappearance[name].skin = "("..fskin.."^[colorize:#4b2700:"..tostring(c*20)..")^"
                 end
                 
             end
         elseif string.find(f,"eyes") ~= nil then
             if string.find(f, col) ~= nil then
-                appearance.eyes_col = col
-                if appearance[name].sex == "male" then
-                    appearance[name].eyes = "("..meyes.."^[colorize:"..col..":220)^"
+                myappearance.eyes_col = col
+                if myappearance[name].sex == "male" then
+                    myappearance[name].eyes = "("..meyes.."^[colorize:"..col..":220)^"
                 else
-                    appearance[name].eyes = "("..feyes.."^[colorize:"..col..":220)^"
+                    myappearance[name].eyes = "("..feyes.."^[colorize:"..col..":220)^"
                 end
             end
         elseif string.find(f,"hair") ~= nil then
             if string.find(f, col) ~= nil then
-                appearance.hair_col = col
-                if appearance[name].sex == "male" then
-                    appearance[name].hair = "("..mhair.."^[colorize:"..col..":220)"
+                myappearance.hair_col = col
+                if myappearance[name].sex == "male" then
+                    myappearance[name].hair = "("..mhair.."^[colorize:"..col..":220)"
                 else
-                    appearance[name].hair = "("..fhair.."^[colorize:"..col..":220)"
+                    myappearance[name].hair = "("..fhair.."^[colorize:"..col..":220)"
                 end
             end
         elseif string.find(f,"shirt") ~= nil then
             if string.find(f, col) ~= nil then
-                appearance.shirt_col = col
-                if appearance[name].sex == "male" then
-                    appearance[name].shirt = "("..mshirt.."^[colorize:"..col..":200)^"
+                myappearance.shirt_col = col
+                if myappearance[name].sex == "male" then
+                    myappearance[name].shirt = "("..mshirt.."^[colorize:"..col..":200)^"
                 else
-                    appearance[name].shirt = "("..fshirt.."^[colorize:"..col..":200)^"
+                    myappearance[name].shirt = "("..fshirt.."^[colorize:"..col..":200)^"
                 end
             end
         elseif string.find(f,"pants") ~= nil then
             if string.find(f, col) ~= nil then
-                appearance.pants_col = col
-                if appearance[name].sex == "male" then
-                    appearance[name].pants = "("..mpants.."^[colorize:"..col..":200)^"
+                myappearance.pants_col = col
+                if myappearance[name].sex == "male" then
+                    myappearance[name].pants = "("..mpants.."^[colorize:"..col..":200)^"
                 else
-                    appearance[name].pants = "("..fpants.."^[colorize:"..col..":200)^"
+                    myappearance[name].pants = "("..fpants.."^[colorize:"..col..":200)^"
                 end
             end
         elseif string.find(f,"shoes") ~= nil then
             if string.find(f, col) ~= nil then
-                appearance.shoes_col = col
-                if appearance[name].sex == "male" then
-                    appearance[name].shoes = "("..mshoes.."^[colorize:"..col..":150)^"
+                myappearance.shoes_col = col
+                if myappearance[name].sex == "male" then
+                    myappearance[name].shoes = "("..mshoes.."^[colorize:"..col..":150)^"
                 else
-                    appearance[name].shoes = "("..fshoes.."^[colorize:"..col..":240)^"
+                    myappearance[name].shoes = "("..fshoes.."^[colorize:"..col..":240)^"
                 end
             end
         elseif string.find(f,"belt") ~= nil then
             if string.find(f, col) ~= nil then
-            appearance.belt_col = col
-                if appearance[name].sex == "male" then
-                    appearance[name].belt = "("..mbelt.."^[colorize:"..col..":220)^"
+            myappearance.belt_col = col
+                if myappearance[name].sex == "male" then
+                    myappearance[name].belt = "("..mbelt.."^[colorize:"..col..":220)^"
                 else
-                    appearance[name].belt = "("..fbelt.."^[colorize:"..col..":220)^"
+                    myappearance[name].belt = "("..fbelt.."^[colorize:"..col..":220)^"
                 end
             end
         else
             return
         end
     end
-    appearance_update(name)
-    save_appearance()
+    myappearance_update(name)
+    save_myappearance()
 end
 
 -- ===================================================================
 
-local appearance_form_mirror =
+local myappearance_form_mirror =
         "size[8.5,6;]"..
         --"bgcolor[#40a7dc;true]"..
         "background[0,0;8.5,6.25;appearance_form_background.png]"..
@@ -282,7 +282,7 @@ local appearance_form_mirror =
 
         "button_exit[6.5,5;1.5,1;exit;Exit]"
 
-local appearance_form_wardrobe =
+local myappearance_form_wardrobe =
         "size[8.5,6;]"..
         --"bgcolor[#0000;false]"..
         "background[0,0;8.5,6.25;appearance_form_background.png]"..
@@ -368,7 +368,7 @@ local appearance_form_wardrobe =
 
 local function newplayer (player)
     local name = player:get_player_name()
-    appearance [name] = {
+    myappearance [name] = {
         sex = "male",
         skin = mskin.."^",
         skin_col = "4",
@@ -388,25 +388,26 @@ local function newplayer (player)
         hair_col = "brown",
     }
 
-    save_appearance()
-    default.player_register_model("appearance_character.b3d", {
+    save_myappearance()
+    default.player_register_model("myappearance_character.b3d", {
     animation_speed = 30,
-    --textures = tex,
-
+    textures = {"character.png"},
     animations = {
-            stand = {x=0, y=79},
-            lay = {x=162, y=166},
-            walk = {x=168, y=187},
-            mine = {x=189, y=198},
+            stand     = {x=0, y=79},
+            lay       = {x=162, y=166},
+            walk      = {x=168, y=187},
+            mine      = {x=189, y=198},
             walk_mine = {x=200, y=219},
-            sit = {x=81, y=160},
-            },
+            sit       = {x=81, y=160},
+            }
+
         })
-    --minetest.show_formspec(name, "appearance", appearance_form)
+
+    --minetest.show_formspec(name, "myappearance", myappearance_form)
     minetest.register_on_player_receive_fields(function(player, formname, fields)
         local name = player:get_player_name()
-        if formname == "appearance" then
-            change_appearance(name,fields)
+        if formname == "myappearance" then
+            change_myappearance(name,fields)
         end
     end)
 end
@@ -417,8 +418,8 @@ end
 minetest.register_on_joinplayer (function (player)
     local name = player:get_player_name()
 
-    if appearance [name] then
-        appearance_update (name)
+    if myappearance [name] then
+        myappearance_update (name)
     else
         newplayer (player)
     end
@@ -426,7 +427,7 @@ end)
 
 -- ===================================================================
 --mirror and wardrobe nodes
-minetest.register_node("appearance:wardrobe",{
+minetest.register_node("myappearance:wardrobe",{
 	description = "Wardrobe - Change clothes",
 	drawtype = "normal",
 	inventory_image = "appearance_wardrobe_inv.png",
@@ -446,27 +447,27 @@ minetest.register_node("appearance:wardrobe",{
 		local node = minetest.get_node(pos)
 		local unode = minetest.get_node({x = pos.x, y = pos.y + 1, z = pos.z})
 		local facedir = minetest.dir_to_facedir(placer:get_look_dir())
-		if minetest.get_node(pointed_thing.under).name == "appearance:wardrobe" then
-				minetest.show_formspec(placer:get_player_name(), "appearance_wardrobe", appearance_form_wardrobe)
+		if minetest.get_node(pointed_thing.under).name == "myappearance:wardrobe" then
+				minetest.show_formspec(placer:get_player_name(), "myappearance_wardrobe", myappearance_form_wardrobe)
 				minetest.register_on_player_receive_fields(function(player, formname, fields)
 					local name = placer:get_player_name()
-					if formname == "appearance_wardrobe" then
-						change_appearance (name,fields)
+					if formname == "myappearance_wardrobe" then
+						change_myappearance (name,fields)
 					end
 				end)
-		elseif minetest.get_node(pointed_thing.under).name == "appearance:mirror" then
-				minetest.show_formspec(placer:get_player_name(), "appearance_mirror", appearance_form_mirror)
+		elseif minetest.get_node(pointed_thing.under).name == "myappearance:mirror" then
+				minetest.show_formspec(placer:get_player_name(), "myappearance_mirror", myappearance_form_mirror)
 				minetest.register_on_player_receive_fields(function(player, formname, fields)
 					local name = placer:get_player_name()
-					if formname == "appearance_mirror" then
-						change_appearance (name,fields)
+					if formname == "myappearance_mirror" then
+						change_myappearance (name,fields)
 					end
 				end)
-		elseif minetest.get_node(pointed_thing.under).name ~= "appearance:wardrobe"
-		or minetest.get_node(pointed_thing.under).name ~= "appearance:mirror" then
+		elseif minetest.get_node(pointed_thing.under).name ~= "myappearance:wardrobe"
+		or minetest.get_node(pointed_thing.under).name ~= "myappearance:mirror" then
 			if unode.name == "air" then
-				minetest.set_node(pos, {name = "appearance:wardrobe", param2 = facedir})
-				minetest.set_node({x = pos.x, y = pos.y + 1, z = pos.z}, {name = "appearance:mirror", param2 = facedir})
+				minetest.set_node(pos, {name = "myappearance:wardrobe", param2 = facedir})
+				minetest.set_node({x = pos.x, y = pos.y + 1, z = pos.z}, {name = "myappearance:mirror", param2 = facedir})
 			else
 				minetest.chat_send_player(placer:get_player_name(), "Not enough room there!")
 				return
@@ -475,22 +476,22 @@ minetest.register_node("appearance:wardrobe",{
 	end,
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		local unode = minetest.get_node({x = pos.x, y = pos.y + 1, z = pos.z})
-		if unode.name == "appearance:mirror" then
+		if unode.name == "myappearance:mirror" then
 			minetest.set_node({x = pos.x, y = pos.y + 1, z = pos.z}, {name = "air"})
 		end
 	end,
 	on_rightclick = function(pos, node, player, itemstack, pointed_thing)
-		minetest.show_formspec(player:get_player_name(), "appearance_wardrobe", appearance_form_wardrobe)
+		minetest.show_formspec(player:get_player_name(), "myappearance_wardrobe", myappearance_form_wardrobe)
         minetest.register_on_player_receive_fields(function(player, formname, fields)
             local name = player:get_player_name()
-            if formname == "appearance_wardrobe" then
-                change_appearance (name,fields)
+            if formname == "myappearance_wardrobe" then
+                change_myappearance (name,fields)
             end
         end)
 	end,
 })
 
-minetest.register_node("appearance:mirror",{
+minetest.register_node("myappearance:mirror",{
 	description = "Mirror - Change appearance",
 	drawtype = "nodebox",
 	tiles = {"appearance_wardrobe_top.png",
@@ -503,7 +504,7 @@ minetest.register_node("appearance:mirror",{
 			},
 	paramtype = "light",
 	paramtype2 = "facedir",
-	drops = "appearance:wardrobe",
+	drops = "myappearance:wardrobe",
 	groups = {cracky = 2, not_in_creative_inventory = 1},
 	node_box = {
 		type = "fixed",
@@ -512,44 +513,27 @@ minetest.register_node("appearance:mirror",{
 		}
 	},
 	on_rightclick = function(pos, node, player, itemstack, pointed_thing)
-		minetest.show_formspec(player:get_player_name(), "appearance_mirror", appearance_form_mirror)
+		minetest.show_formspec(player:get_player_name(), "myappearance_mirror", myappearance_form_mirror)
         minetest.register_on_player_receive_fields(function(player, formname, fields)
             local name = player:get_player_name()
-            if formname == "appearance_mirror" then
-                change_appearance (name,fields)
+            if formname == "myappearance_mirror" then
+                change_myappearance (name,fields)
             end
         end)
 	end,
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		local unode = minetest.get_node({x = pos.x, y = pos.y - 1, z = pos.z})
-		if unode.name == "appearance:wardrobe" then
+		if unode.name == "myappearance:wardrobe" then
 			minetest.set_node({x = pos.x, y = pos.y - 1, z = pos.z}, {name = "air"})
 		end
 	end,
 })
 
 minetest.register_craft({
-	output = "appearance:wardrobe",
+	output = "myappearance:wardrobe",
 	recipe = {
 		{"group:stick", "default:glass", "group:stick"},
 		{"group:wood", "group:stick", "group:wood"},
 		{"group:wood", "group:wood", "group:wood"}
 	}
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
