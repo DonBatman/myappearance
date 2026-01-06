@@ -58,47 +58,31 @@ local fbelt      = APFEMALE .. "belt.png"
 local foverlay   = APFEMALE .. "overlay.png"
 local fhair      = APFEMALE .. "hair.png"
 
-function myappearance_update (name)
-    local player = core.get_player_by_name (name)
-    if not player then
-        return
+function myappearance_update(name)
+    local player = core.get_player_by_name(name)
+    if not player or not myappearance[name] then return end
+
+    local ap = myappearance[name]
+    
+    local skin_texture = ap.skin .. ap.pants .. ap.shirt .. ap.shoes .. 
+                         ap.face .. ap.eyes .. ap.belt .. ap.overlay .. ap.hair
+
+    if string.sub(skin_texture, -1) == "^" then
+        skin_texture = string.sub(skin_texture, 1, -2)
     end
-     if not myappearance or not myappearance [name] then
-         return
-     end
 
-    local apname       = myappearance [name]
-
-    local skintex    = apname.skin
-    local pantstex    = apname.pants
-    local shirttex    = apname.shirt
-    local shoestex    = apname.shoes
-    local facetex    = apname.face
-    local eyestex    = apname.eyes
-    local belttex    = apname.belt
-    local overlaytex = apname.overlay
-    local hairtex    = apname.hair
-
-    local combined_textures = {
-        skintex    .. pantstex    .. shirttex    .. shoestex    ..
-        facetex    .. eyestex    .. belttex    .. overlaytex ..
-        hairtex
-    }
-    player:set_properties ({
-        mesh = "myappearance_character.b3d" ,
-        textures = combined_textures ,
-        visual = "mesh" ,
-        visual_size = { x=1, y=1} ,
-        animation_speed = 30,
-        animations = {
-            stand       = {x=0, y=79},
-            lay         = {x=162, y=166},
-            walk        = {x=168, y=187},
-            mine        = {x=189, y=198},
-            walk_mine   = {x=200, y=219},
-            sit         = {x=81, y=160},
-        },
-    })
+    if core.global_exists("armor") then
+        local armor_mod = _G["armor"]
+        armor_mod.textures[name].skin = skin_texture
+        armor_mod:update_player_visuals(player)
+    else
+        player:set_properties({
+            visual = "mesh",
+            mesh = "myappearance_character.b3d",
+            textures = {skin_texture},
+            visual_size = {x=1, y=1},
+        })
+    end
 end
 
 local colors_table = {
