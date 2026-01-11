@@ -515,3 +515,6 @@ core.register_on_player_receive_fields(function(player, formname, fields)
     end
 end)
 
+lucky_block:add_blocks({
+	{"dro", {"myappearance:wardrobe"}, 1},
+})
