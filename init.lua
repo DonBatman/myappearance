@@ -3,34 +3,31 @@ local myappearance_world_path = nil
 local myappearance_mod_path = core.get_modpath("myappearance")
 
 function read_myappearance()
+    myappearance_world_path = myappearance_world_path or core.get_worldpath()
     if not myappearance_world_path then
         return nil
     end
     local DATAPATH = myappearance_world_path .. "/myappearance.dat"
-    local f, err = io.open (DATAPATH, "r")
-    if err then
-        return nil
-    end
+    local f = io.open(DATAPATH, "r")
     if not f then
         return nil
     end
     local raw_data = f:read("*a")
     f:close()
-    local data = core.deserialize (raw_data)
+    local data = core.deserialize(raw_data)
     return data
 end
 
 function save_myappearance()
-     if not myappearance_world_path then
+    myappearance_world_path = myappearance_world_path or core.get_worldpath()
+    if not myappearance_world_path then
         return
     end
     local DATAPATH = myappearance_world_path .. "/myappearance.dat"
-    local serialized_data = core.serialize (myappearance)
-    local file, err = io.open (DATAPATH, "w")
-    if err then
-    elseif not file then
-    else
-        file:write (serialized_data)
+    local serialized_data = core.serialize(myappearance)
+    local file = io.open(DATAPATH, "w")
+    if file then
+        file:write(serialized_data)
         file:close()
     end
 end
@@ -73,8 +70,10 @@ function myappearance_update(name)
 
     if core.global_exists("armor") then
         local armor_mod = _G["armor"]
-        armor_mod.textures[name].skin = skin_texture
-        armor_mod:update_player_visuals(player)
+        if armor_mod.textures[name] then
+            armor_mod.textures[name].skin = skin_texture
+            armor_mod:update_player_visuals(player)
+        end
     else
         player:set_properties({
             visual = "mesh",
@@ -88,7 +87,7 @@ end
 local colors_table = {
     { "black"     , "Black"      , "#000000b0" } ,
     { "blue"      , "Blue"       , "#015dbb70" } ,
-    { "brown"      , "Brown"      , "#a78c4570" } ,
+    { "brown"     , "Brown"      , "#a78c4570" } ,
     { "cyan"      , "Cyan"       , "#01ffd870" } ,
     { "darkgreen" , "Dark Green" , "#005b0770" } ,
     { "darkgrey"  , "Dark Grey"  , "#303030b0" } ,
@@ -99,7 +98,7 @@ local colors_table = {
     { "pink"      , "Pink"       , "#ff65b570" } ,
     { "red"       , "Red"        , "#ff000070" } ,
     { "violet"    , "Violet"     , "#2000c970" } ,
-    { "white"      , "White"      , "#abababc0" } ,
+    { "white"     , "White"      , "#abababc0" } ,
     { "yellow"    , "Yellow"     , "#e3ff0070" } ,
 }
 
@@ -111,8 +110,9 @@ local function get_color_name_from_field(field_name, prefix)
 end
 
 local function newplayer (player)
+    local morf = math.random(1,2)
     local name = player:get_player_name()
-    myappearance [name] = {
+    myappearance[name] = {
         sex = "male",
         skin = mskin.."^",
         skin_col = "4",
@@ -126,49 +126,67 @@ local function newplayer (player)
         belt_col = "black",
         face = mface.."^",
         eyes = meyes.."^",
-        eyes_col = "blue",
+        eyes_col = "green",
         overlay = moverlay.."^",
         hair = mhair,
         hair_col = "brown",
     }
-    if myappearance_world_path then
-        save_myappearance()
-    end
-    default.player_register_model("myappearance_character.b3d", {
-        animation_speed = 30,
-        textures = {"character.png"},
-        animations = {
-            stand       = {x=0, y=79},
-            lay         = {x=162, y=166},
-            walk        = {x=168, y=187},
-            mine        = {x=189, y=198},
-            walk_mine   = {x=200, y=219},
-            sit         = {x=81, y=160},
+    if morf == 1 then
+        myappearance[name] = {
+            sex = "female",
+            skin = fskin.."^",
+            skin_col = "4",
+            pants = fpants.."^",
+            pants_col = "blue",
+            shirt = fshirt.."^",
+            shirt_col = "green",
+            shoes = fshoes.."^",
+            shoes_col = "black",
+            belt = fbelt.."^",
+            belt_col = "black",
+            face = fface.."^",
+            eyes = feyes.."^",
+            eyes_col = "blue",
+            overlay = moverlay.."^",
+            hair = fhair,
+            hair_col = "brown",
         }
-    })
+    end
+
+    save_myappearance()
+
+    if default and default.player_register_model then
+        default.player_register_model("myappearance_character.b3d", {
+            animation_speed = 30,
+            textures = {"character.png"},
+            animations = {
+                stand       = {x=0, y=79},
+                lay         = {x=162, y=166},
+                walk        = {x=168, y=187},
+                mine        = {x=189, y=198},
+                walk_mine   = {x=200, y=219},
+                sit         = {x=81, y=160},
+            }
+        })
+    end
 end
 
 core.register_on_joinplayer (function (player)
     local name = player:get_player_name()
-    if core and core.get_worldpath then
-        local world_path_on_join = core.get_worldpath()
-        if world_path_on_join then
-            myappearance_world_path = world_path_on_join
-            local loaded_data = read_myappearance()
-            if loaded_data then
-                myappearance = loaded_data
-            else
-                newplayer (player)
-            end
-            myappearance_update (name)
-        else
-             newplayer(player)
-             myappearance_update(name)
+    myappearance_world_path = core.get_worldpath()
+    
+    local loaded_data = read_myappearance()
+    if loaded_data then
+        for k, v in pairs(loaded_data) do
+            myappearance[k] = v
         end
-    else
-         newplayer(player)
-         myappearance_update(name)
     end
+
+    if not myappearance[name] then
+        newplayer (player)
+    end
+    
+    myappearance_update(name)
 end)
 
 core.register_on_leaveplayer(function(player)
@@ -201,6 +219,7 @@ core.register_node("myappearance:wardrobe",{
             if core.get_node(pos).name == "air" then
                 core.set_node(pos, {name = "myappearance:wardrobe", param2 = facedir})
                 core.set_node({x = pos.x, y = pos.y + 1, z = pos.z}, {name = "myappearance:mirror", param2 = facedir})
+                itemstack:take_item()
                 return itemstack
             else
                  core.chat_send_player(placer:get_player_name(), "Cannot place here.")
@@ -287,9 +306,7 @@ core.register_node("myappearance:wardrobe",{
             "image_button[7,4;0.5,0.5;wool_white.png;belt_white;]"..
             "image_button[7.5,4;0.5,0.5;wool_yellow.png;belt_yellow;]"..
             "button_exit[6.5,5;1.5,1;exit;Exit]"
-        if myappearance_form_wardrobe then
-            core.show_formspec(player:get_player_name(), "myappearance_wardrobe", myappearance_form_wardrobe)
-        end
+        core.show_formspec(player:get_player_name(), "myappearance_wardrobe", myappearance_form_wardrobe)
         return itemstack
     end,
 })
@@ -365,9 +382,7 @@ core.register_node("myappearance:mirror",{
             "image_button[7,4;0.5,0.5;wool_white.png;eyes_white;]"..
             "image_button[7.5,4;0.5,0.5;wool_yellow.png;hair_yellow;]"..
             "button_exit[6.5,5;1.5,1;exit;Exit]"
-        if myappearance_form_mirror then
-            core.show_formspec(player:get_player_name(), "myappearance_mirror", myappearance_form_mirror)
-        end
+        core.show_formspec(player:get_player_name(), "myappearance_mirror", myappearance_form_mirror)
         return itemstack
     end,
     after_dig_node = function(pos, oldnode, oldmetadata, digger)
@@ -511,12 +526,10 @@ core.register_on_player_receive_fields(function(player, formname, fields)
             return
         end
     end
-    if fields.quit or fields.exit then
-    end
 end)
 
 if core.get_modpath("lucky_block") then
-	lucky_block:add_blocks({
-		{"dro", {"myappearance:wardrobe"}, 1},
-	})
+    lucky_block:add_blocks({
+        {"dro", {"myappearance:wardrobe"}, 1},
+    })
 end
