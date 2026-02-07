@@ -337,7 +337,9 @@ core.register_node("myappearance:mirror",{
             "background[0,0;8.5,6.25;appearance_form_background.png]"..
             "label[0.5,0.5;Male or Female]"..
             "image_button[2.5,0.5;1,1;appearance_male.png;sex_male;]"..
+            "label[3,1;Male]"..
             "image_button[4,0.5;1,1;appearance_female.png;sex_female;]"..
+            "label[4.5,1;Female]"..
             "label[0.5,1.5;Skin Color]"..
             "image_button[0.5,2;0.5,0.5;appearance_skin01.png;skin_01;]"..
             "image_button[1,2;0.5,0.5;appearance_skin02.png;skin_02;]"..
